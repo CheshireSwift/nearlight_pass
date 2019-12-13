@@ -1,10 +1,10 @@
-use std::io;
 use std::fs;
 use std::process;
 
 use std::cmp::Ordering;
 
 use serde::Deserialize;
+use ron::de as ron_de;
 
 #[derive(Deserialize)]
 struct Ship {
@@ -12,13 +12,14 @@ struct Ship {
     strongs: i32,
 }
 
-fn read_ship(filename: &str) -> io::Result<Ship> {
-    return fs::read_to_string(filename).map(|data_string| ron::de::from_str(&data_string).unwrap());
+fn read_ship(filename: &str) -> Result<Ship, ron_de::Error> {
+    let data_string = fs::read_to_string(filename)?;
+    return ron_de::from_str(&data_string);
 }
 
 fn read_ship_or_bail(filename: &str) -> Ship {
     return read_ship(filename).unwrap_or_else(|err| {
-        eprintln!("Unable to parse a.ron: {:?}", err);
+        eprintln!("Unable to parse {}: {:?}", filename, err);
         process::exit(1);
     });
 }
