@@ -1,23 +1,59 @@
-use crate::types::{Outcome, Ship};
+use crate::types::{Ship, Outcome};
 
 pub fn resolve(a: &Ship, b: &Ship) -> Outcome {
-  a.strongs.cmp(&b.strongs)
+  // a.strongs.cmp(&b.strongs)
+  Outcome::Equal
 }
 
 #[cfg(test)]
 mod tests {
-  use super::{resolve, Outcome, Ship};
+  use crate::types::*;
+
+  use super::{resolve};
 
   #[test]
-  fn stronger_ship_wins() {
-    let muscle_and_gainz = Ship {
-      name: "Muscle and Gainz".to_string(),
-      strongs: 284,
+  fn flak_beats_fluid_formation() {
+    let flakky = Ship {
+      name: "Flakky".to_string(),
+      phase_plans: PhasePlans {
+        contact: Plan {
+          weapon: WeaponType::Flak,
+          formation: FormationType::None
+        },
+        approach: Plan {
+          weapon: WeaponType::Flak,
+          formation: FormationType::None
+        },
+        passing: Plan {
+          weapon: WeaponType::Flak,
+          formation: FormationType::None
+        },
+      }
     };
-    let tiny_baby = Ship {
-      name: "Tiny Baby".to_string(),
-      strongs: 2,
+
+    let unlucky = Ship {
+      name: "Unlucky".to_string(),
+      phase_plans: PhasePlans {
+        contact: Plan {
+          weapon: WeaponType::None,
+          formation: FormationType::Fluid
+        },
+        approach: Plan {
+          weapon: WeaponType::None,
+          formation: FormationType::Fluid
+        },
+        passing: Plan {
+          weapon: WeaponType::None,
+          formation: FormationType::Fluid
+        },
+      }
     };
-    assert_eq!(resolve(&muscle_and_gainz, &tiny_baby), Outcome::Greater);
+
+    assert_eq!(resolve(&flakky, &unlucky), Outcome::Greater);
   }
+
+  #[test]
+  fn fighters_beat_far_formation() {}
+  #[test]
+  fn beam_beats_close_formation() {}
 }
